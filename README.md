@@ -1,10 +1,8 @@
-Universidade de Brasília
+Universidade de Brasília - Depto. de Ciências da Computação
 
-Depto. de Ciências da Computação
+CIC0202 - Programação Concorrente - 2025.2
 
-CIC0202 - Programação Concorrente
-
-T01 - Prof. Eduardo Adilio Pelinson Alchieri
+Prof. Eduardo Adilio Pelinson Alchieri
 
 # Problema da Impressora
 
