@@ -1,86 +1,85 @@
+/*
+Desenvolvido por: Elis Rodrigues Borges - 231018875
+
+PROBLEMA DA IMPRESSORA
+Este código foi desenvolvido como parte do projeto da disciplina CIC0202 - Programação Concorrente,
+Turma 01, durante o semestre 2025.2 na Universidade de Brasília. Ele implementa o algoritmo solução
+do "Problema da Impressora" utilizando sincronização entre processos em C com a biblioteca pthreads.
+*/
+
 #include "stdio.h"
 #include "unistd.h"
 #include "stdlib.h"
 #include "pthread.h"
 
-#define TRUE 1
+#define ALUNOS 10 // numero de alunos querendo usar as impressoras
+#define IMPRESSORAS 2 // numero de impressoras disponíveis
+#define TEMPO 15 // intervalo de tempo (em segundos) entre manutenções
 
-#define NE 10 //numero de escritores
-#define NL 20 //numero de leitores
+int cont = 0;
 
-int rc = 0;                     /* número de processos lendo ou querendo ler */
-
-void * reader(void *arg);
-void * writer(void *arg);
-void read_data_base();
-void use_data_read();
-void think_up_data();
-void write_data_base();
+void * aluno(void *arg);
+void * tecnico(void *arg);
+void prepara_impressao(int i);
+void usa_impressora(int i, int imp);
+void manutencao(int i);
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t cond_db = PTHREAD_COND_INITIALIZER;
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 int main() {
-	pthread_t r[NL], w[NE];
+    srand(time(NULL));
+	pthread_t a[ALUNOS];
+    pthread_t t;
 
 	int i;
-        int *id;
-        /* criando leitores */
-    	for (i = 0; i < NL ; i++) {
-	   id = (int *) malloc(sizeof(int));
-           *id = i;
-		 pthread_create(&r[i], NULL, reader, (void *) (id));
+    int *id;
+
+    for (i = 0; i < ALUNOS ; i++) {
+        id = (int *) malloc(sizeof(int));
+        *id = i;
+        pthread_create(&a[i], NULL, aluno, (void *) (id));
 	}
 
-	 /* criando escritores */
-	for (i = 0; i< NE; i++) {
-	   id = (int *) malloc(sizeof(int));
-           *id = i;
-		 pthread_create(&w[i], NULL, writer, (void *) (id));
-	}
+    i++;
+    id = (int *) malloc(sizeof(int));
+    *id = i;
+    pthread_create(&t, NULL, tecnico, (void *) (id));
 
-	pthread_join(r[0],NULL);
+	pthread_join(t,NULL);
 	return 0;
 }
 
-void* reader(void *arg) {
+void* aluno(void *arg) {
 	int i = *((int *) arg);
-	while(TRUE) {               /* repere para sempre */
-            
-		 rc = rc + 1;            
-		 read_data_base(i);       
-		 rc = rc - 1;            
-		 use_data_read(i);        /* região não crítica */
+	while(1) {
+        prepara_impressao(i);
+        usa_impressora(i, 1);
 	}
-        pthread_exit(0);
+    pthread_exit(0);
 }
 
-void* writer(void *arg) {
+void* tecnico(void *arg) {
 	int i = *((int *) arg);
-
-	while(TRUE) {               /* repete para sempre */
-		 think_up_data(i);        /* região não crítica */
-		 write_data_base(i);      /* atualiza os dados */
+	while(1) { // repete para sempre
+        sleep(TEMPO); // espera o tempo necessário entre uma manutenção e outra
+        manutencao(i); // faz a manutenção nas impressoras
 	}
-        pthread_exit(0);
+    pthread_exit(0); // encerra a thread (nesse caso)
 }
 
-void read_data_base(int i) {
-	printf("Leitor %d está lendo os dados! Número de leitores = %d \n", i,rc);
+void prepara_impressao(int i) {
+	printf("Aluno %d está preparando um documento para impressão\n", i);
 	sleep( rand() % 5);
+    printf("Aluno %d está esperando para imprimir seu documento\n", i);
 }
 
-void use_data_read(int i) {
-	printf("Leitor %d está usando os dados lidos!\n", i);
+void usa_impressora(int i, int imp) {
+	printf("Aluno %d está usando a impressora %d\n", i, imp);
 	sleep(rand() % 5);
 }
 
-void think_up_data(int i) {
-	printf("Escritor %d está pensando no que escrever!\n", i);
+void manutencao(int i) {
+	printf("Técnico está fazendo manutenção nas impressoras!\n");
 	sleep(rand() % 5);
-}
-
-void write_data_base(int i) {
-	printf("Escritor %d está escrevendo os dados!\n", i);
-	sleep( rand() % 5 + 5);
 }
