@@ -13,3 +13,30 @@ Considere uma situação em que vários alunos de uma universidade precisam impr
 Cada um dos alunos e o técnico são representados por threads, e as impressoras são um recurso compartilhado por todas elas. O problema consiste em sincronizar o acesso das threads às impressoras de modo que nenhum aluno tente imprimir enquanto as impressoras estão em manutenção; nenhuma impressora seja usada por mais de um aluno ao mesmo tempo; e as threads dos alunos esperem corretamente quando não houver impressoras disponíveis.
 
 O código neste repositório implementa o algoritmo solução do Problema da Impressora em C, utilizando sincronização entre processos por meio da biblioteca POSIX.
+
+## Instruções de execução
+
+### Dependências
+
+Para executar o código do projeto é preciso ter o compilador ```gcc``` instalado.
+
+### Passo a passo (MacOS)
+
+1. Para clonar o repositório e navegar até a pasta do projeto
+```bash
+git clone https://github.com/elisrb/problema-da-impressora.git
+cd problema-da-impressora
+```
+
+2. Para compilar o código fonte
+```bash
+gcc -o p trabalho-pc-codigo.c -lpthread  
+```
+
+3. Para executar o código
+```bash
+./p
+```
+
+4. Para interromper a execução do código, aperte Control+C
+(o código não irá encerrar até que sua execução seja interrompida manualmente)
